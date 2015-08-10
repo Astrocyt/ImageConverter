@@ -1,0 +1,9 @@
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\bin\Debug\ImageConverter.exe.config
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.csprojResolveAssemblyReference.cache
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.Properties.Resources.resources
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.csproj.GenerateResource.Cache
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\bin\Debug\ImageConverter.exe
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\bin\Debug\ImageConverter.pdb
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.exe
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.pdb
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.MainView.resources
