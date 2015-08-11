@@ -44,8 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\ImageConvertInfo.cs" />
+    <Compile Include="Model\ImageConvertProperties.cs" />
     <Compile Include="Model\ImageInfo.cs" />
+    <Compile Include="Model\ImagesConverter.cs" />
     <Compile Include="Presenter\PresenterClass\MainViewPresenter.cs" />
     <Compile Include="Presenter\PresenterInterface\IMainViewPresenter.cs" />
     <Compile Include="Presenter\PresenterInterface\IPreviewPresenter.cs" />

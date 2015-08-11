@@ -8,5 +8,7 @@ namespace ImageConverter.View.ViewInterface
         ImageConvertProperties ConvertProperties { get;}
         void AttachPresenter(IMainViewPresenter presenter);
         void ActualizeLoadedImages(ImageInfo[] images);
+        void ActualizeConvertingProgress(double successPercent);
+        void ConvertingComplete();
     }
 }

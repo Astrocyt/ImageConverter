@@ -99,8 +99,6 @@ namespace ImageConverter
         public void AttachPresenter(IMainViewPresenter presenter)
         {
            this._presenter= presenter;
-           this._presenter.ProgressChanged += new ProgressChangeDelegate(ActualizeConvertingProgress);
-           this._presenter.ConvertingComplete += new ConvertingCompletedDelegate(ConvertingComplete);
         }
 
         public void ActualizeLoadedImages(ImageInfo[] images)
@@ -166,7 +164,7 @@ namespace ImageConverter
                 smoothingModeComboBox.Text.ToString());
         }
 
-        private void ConvertingComplete()
+        public void ConvertingComplete()
         {
             this.Invoke((MethodInvoker)(()=>{
                 this.ActualizeConvertingProgress(0);
