@@ -38,10 +38,9 @@
             this.deepSearchCheckBox = new System.Windows.Forms.CheckBox();
             this.imagesInfoListView = new System.Windows.Forms.ListView();
             this.nameColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.extensionColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.sizeColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.sizeAfterColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imagesInfoGroupBox = new System.Windows.Forms.GroupBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.sizeAfterConversionLabel = new System.Windows.Forms.Label();
             this.fullSizeBeforeLabel = new System.Windows.Forms.Label();
             this.conversionOptionsGroupbox = new System.Windows.Forms.GroupBox();
@@ -73,6 +72,7 @@
             this.sourceTextBox.Name = "sourceTextBox";
             this.sourceTextBox.Size = new System.Drawing.Size(273, 20);
             this.sourceTextBox.TabIndex = 0;
+            this.sourceTextBox.TextChanged += new System.EventHandler(this.LoadImagesFromPath);
             // 
             // destonationTextBox
             // 
@@ -123,6 +123,7 @@
             // 
             // pathControlsGroupBox
             // 
+            this.pathControlsGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.pathControlsGroupBox.Controls.Add(this.deepSearchCheckBox);
             this.pathControlsGroupBox.Controls.Add(this.sourceLabel);
             this.pathControlsGroupBox.Controls.Add(this.sourceTextBox);
@@ -151,10 +152,11 @@
             // 
             // imagesInfoListView
             // 
+            this.imagesInfoListView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.imagesInfoListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameColumnHeader,
-            this.sizeColumnHeader,
-            this.sizeAfterColumnHeader});
+            this.extensionColumnHeader,
+            this.sizeColumnHeader});
             this.imagesInfoListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.imagesInfoListView.Location = new System.Drawing.Point(9, 19);
             this.imagesInfoListView.Name = "imagesInfoListView";
@@ -168,19 +170,19 @@
             this.nameColumnHeader.Text = "Name";
             this.nameColumnHeader.Width = 120;
             // 
+            // extensionColumnHeader
+            // 
+            this.extensionColumnHeader.Text = "Extension";
+            this.extensionColumnHeader.Width = 58;
+            // 
             // sizeColumnHeader
             // 
-            this.sizeColumnHeader.Text = "Size now";
-            this.sizeColumnHeader.Width = 61;
-            // 
-            // sizeAfterColumnHeader
-            // 
-            this.sizeAfterColumnHeader.Text = "Size after";
-            this.sizeAfterColumnHeader.Width = 58;
+            this.sizeColumnHeader.Text = "Size";
+            this.sizeColumnHeader.Width = 63;
             // 
             // imagesInfoGroupBox
             // 
-            this.imagesInfoGroupBox.Controls.Add(this.groupBox1);
+            this.imagesInfoGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.imagesInfoGroupBox.Controls.Add(this.sizeAfterConversionLabel);
             this.imagesInfoGroupBox.Controls.Add(this.fullSizeBeforeLabel);
             this.imagesInfoGroupBox.Controls.Add(this.imagesInfoListView);
@@ -190,15 +192,6 @@
             this.imagesInfoGroupBox.TabIndex = 9;
             this.imagesInfoGroupBox.TabStop = false;
             this.imagesInfoGroupBox.Text = "Images informations";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Location = new System.Drawing.Point(266, 0);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(126, 208);
-            this.groupBox1.TabIndex = 10;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
             // 
             // sizeAfterConversionLabel
             // 
@@ -220,6 +213,7 @@
             // 
             // conversionOptionsGroupbox
             // 
+            this.conversionOptionsGroupbox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.conversionOptionsGroupbox.Controls.Add(this.convertingProgess);
             this.conversionOptionsGroupbox.Controls.Add(this.convertFormatComboBox);
             this.conversionOptionsGroupbox.Controls.Add(this.abortConvertingButton);
@@ -237,6 +231,7 @@
             // 
             // convertingProgess
             // 
+            this.convertingProgess.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.convertingProgess.Location = new System.Drawing.Point(5, 353);
             this.convertingProgess.Name = "convertingProgess";
             this.convertingProgess.Size = new System.Drawing.Size(115, 16);
@@ -244,6 +239,7 @@
             // 
             // convertFormatComboBox
             // 
+            this.convertFormatComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.convertFormatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.convertFormatComboBox.FormattingEnabled = true;
             this.convertFormatComboBox.Location = new System.Drawing.Point(5, 100);
@@ -253,6 +249,7 @@
             // 
             // abortConvertingButton
             // 
+            this.abortConvertingButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.abortConvertingButton.Location = new System.Drawing.Point(6, 314);
             this.abortConvertingButton.Name = "abortConvertingButton";
             this.abortConvertingButton.Size = new System.Drawing.Size(45, 33);
@@ -264,6 +261,7 @@
             // 
             // startConvertingButton
             // 
+            this.startConvertingButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.startConvertingButton.Location = new System.Drawing.Point(53, 314);
             this.startConvertingButton.Name = "startConvertingButton";
             this.startConvertingButton.Size = new System.Drawing.Size(67, 33);
@@ -275,6 +273,7 @@
             // 
             // newSizeGroupBox
             // 
+            this.newSizeGroupBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.newSizeGroupBox.Controls.Add(this.ratioConvertTrackBar);
             this.newSizeGroupBox.Controls.Add(this.ratioRadioButton);
             this.newSizeGroupBox.Controls.Add(this.allToSizeRadioButton);
@@ -358,6 +357,7 @@
             // 
             // smoothingModeComboBox
             // 
+            this.smoothingModeComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.smoothingModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.smoothingModeComboBox.FormattingEnabled = true;
             this.smoothingModeComboBox.Location = new System.Drawing.Point(5, 73);
@@ -367,6 +367,7 @@
             // 
             // interpolationComboBox
             // 
+            this.interpolationComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.interpolationComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.interpolationComboBox.FormattingEnabled = true;
             this.interpolationComboBox.Location = new System.Drawing.Point(5, 46);
@@ -376,6 +377,7 @@
             // 
             // compositionQualityComboBox
             // 
+            this.compositionQualityComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.compositionQualityComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.compositionQualityComboBox.FormattingEnabled = true;
             this.compositionQualityComboBox.Location = new System.Drawing.Point(5, 19);
@@ -391,6 +393,7 @@
             this.Controls.Add(this.conversionOptionsGroupbox);
             this.Controls.Add(this.imagesInfoGroupBox);
             this.Controls.Add(this.pathControlsGroupBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainView";
             this.Text = "Image Converter v0.1";
             this.pathControlsGroupBox.ResumeLayout(false);
@@ -417,10 +420,9 @@
         private System.Windows.Forms.CheckBox deepSearchCheckBox;
         private System.Windows.Forms.ListView imagesInfoListView;
         private System.Windows.Forms.ColumnHeader nameColumnHeader;
+        private System.Windows.Forms.ColumnHeader extensionColumnHeader;
         private System.Windows.Forms.ColumnHeader sizeColumnHeader;
-        private System.Windows.Forms.ColumnHeader sizeAfterColumnHeader;
         private System.Windows.Forms.GroupBox imagesInfoGroupBox;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label sizeAfterConversionLabel;
         private System.Windows.Forms.Label fullSizeBeforeLabel;
         private System.Windows.Forms.GroupBox conversionOptionsGroupbox;

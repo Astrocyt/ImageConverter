@@ -5,6 +5,8 @@ using ImageConverter.View.ViewInterface;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using ImageConverter.Model;
+
 namespace ImageConverter
 {
     static class ProgramStart
@@ -17,12 +19,12 @@ namespace ImageConverter
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
+
             IMainView view = new MainView();
             IMainViewPresenter presenter = new MainViewPresenter(view);
             view.AttachPresenter(presenter);
-            
+
             Application.Run((view as Form));
-        }
+        }  
     }
 }

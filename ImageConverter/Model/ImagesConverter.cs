@@ -6,20 +6,22 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ImageConverter.Model
 {
     public class ImagesConverter
     {
+        #region Event & Delegates
         public delegate void ProgressChangeDelegate(double completePercent);
         public delegate void ConvertingCompletedDelegate();
 
         public event ProgressChangeDelegate ConvertingProgressChanged;
         public event ConvertingCompletedDelegate ConvertingComplete;
-        
-        public ImageInfo[] ImagesLoaded {get; private set;}
-        public long ImagesSize 
-        {get {return ImagesLoaded.Sum(i => i.sizeBeforeConversion);}} 
+        #endregion
+
+        private CancellationTokenSource _abortOperationTokenSource;
+        private static ImagesConverter _imageConverterInstance;
         
         public string[] ImagesExtensions
         {
@@ -31,131 +33,115 @@ namespace ImageConverter.Model
             }
         }
         
-        public ImagesConverter(ImageInfo[] imagesToConvert)
+        private ImagesConverter()
         {
-            this.ImagesLoaded = imagesToConvert;
+            this._abortOperationTokenSource = new CancellationTokenSource();
         }
-        public ImagesConverter(string path,bool deepSearch)
-        {
-            string[] findedFiles;
-            string[] imagesPaths;
-            
-            if(deepSearch)
-                findedFiles = Directory.GetFiles(path,"*",SearchOption.AllDirectories);
-            else findedFiles = Directory.GetFiles(path);
-
-            imagesPaths = FindOnlyPicturesFiles(findedFiles);
-            this.ImagesLoaded = ConvertPathsToImageInfo(imagesPaths);
-        }
-
         
-        public void ConvertAll(ImageConvertProperties convertProperties)
+        public static ImagesConverter GetInstance()
         {
-           
-        }
-        public void ConvertAll(ImageConvertProperties convertProperties,CancellationToken cancelToken)
-        {
-            for (int i = 0; i < ImagesLoaded.Length &&
-                !cancelToken.IsCancellationRequested; i++)
+            if(_imageConverterInstance == null)
             {
-                ConvertAndSaveImage(ImagesLoaded[i], convertProperties);
-
-                if (ConvertingProgressChanged != null)
-                    ConvertingProgressChanged((double)i / ImagesLoaded.Length);
+                _imageConverterInstance = new ImagesConverter();
             }
-
-            if (ConvertingComplete != null)
-                ConvertingComplete();
+            return _imageConverterInstance;
         }
 
-        public void AddImage(string path)
+        public void ConvertAllAsync(ImageConvertProperties convertProperties,string[] imagesPaths)
         {
-            ImagesLoaded.Concat(ConvertPathsToImageInfo(new string[]{path}));
+            CancellationToken cancelTask = _abortOperationTokenSource.Token;
+            Task.Factory.StartNew(()=>{
+                for (int i = 0; i < imagesPaths.Length && !cancelTask.IsCancellationRequested; i++)
+                {
+                    ConvertImage(imagesPaths[i],convertProperties);
+                    if(ConvertingProgressChanged != null)
+                        ConvertingProgressChanged(i/(double)imagesPaths.Length);
+                }
+                if(ConvertingComplete != null)
+                    ConvertingComplete();
+            });
         }
-        public void AddImages(string[] paths)
-        {
-            ImagesLoaded.Concat(ConvertPathsToImageInfo(paths));
-        }
-        public void AddImage(ImageInfo image)
-        { ImagesLoaded.Concat(new ImageInfo[]{image}); }
-        public void AddImages(ImageInfo[] images)
-        { ImagesLoaded.Concat(images); }
 
-        private ImageInfo[] ConvertPathsToImageInfo(string[] paths)
+        public string[] GetAllImagesPaths(string path,bool deepSearch)
         {
-            ImageInfo[] imgInfo = new ImageInfo[paths.Length];
-
-            for (int i = 0; i < paths.Length; i++)
+            if(Directory.Exists(path))
             {
-                imgInfo[i].imagePath = paths[i];
-                imgInfo[i].sizeBeforeConversion = new FileInfo(paths[i]).Length;
+                string[] imagesPaths;
+                SearchOption searchType = deepSearch ? 
+                    SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                
+                imagesPaths = Directory.GetFiles(path,"*",searchType);
+                imagesPaths = FindOnlyPicturesFiles(imagesPaths);
+
+                return imagesPaths;
             }
-            return imgInfo;
+            else return new string[]{};
         }
-        private string[] FindOnlyPicturesFiles(string[] fTable)
+        
+        public void ConvertImage(string imagePath,ImageConvertProperties properties)
         {
-            return (from f in fTable
-                    where ImagesExtensions.Contains(Path.GetExtension(f).TrimStart('.'))
-                    select f).ToArray<string>();
-        }
-        //Converting img to ImageConvertProperties methods
-        private void ConvertAndSaveImage(ImageInfo orgImage,ImageConvertProperties properties)
-        {
-            //wtf ?
-            byte[] data;
-            Image i;
-            using (FileStream fs = new FileStream(orgImage.imagePath, FileMode.Open))
-            {
-                data = new BinaryReader(fs).ReadBytes((int)fs.Length);
-                i = Image.FromStream(new MemoryStream(data));
-            }
-            //-- ? --
-            //Image loadedImage = Bitmap.FromFile(orgImage.imagePath);
-            Image loadedImage = new Bitmap(new Bitmap((Image)i.Clone()));
-            Image imageReadyToSave;
+            Image loadedImage = LoadImage(imagePath);
+            Image convertedImage;
+            int width,height;
             
             string savePath = string.Format("{0}\\{1}.{2}",
                 properties.destonationPath,
-                Path.GetFileNameWithoutExtension(orgImage.imagePath),
+                Path.GetFileNameWithoutExtension(imagePath),
                 properties.imageFormat.ToString().ToLower());
 
             if (properties.ratioMode)
             {
-                imageReadyToSave = ConvertToRatio(loadedImage,properties);
+                double ratio = 1/(double)properties.ratio;
+                width = (int)(loadedImage.Width * ratio);
+                height = (int)(loadedImage.Height * ratio);
             }
             else
             {
-                imageReadyToSave = ConvertToSize(loadedImage,properties);
+                width = properties.width;
+                height = properties.height;
             }
+            convertedImage = new Bitmap(width, height);
+            DrawImgtoBitmap(ref convertedImage,loadedImage,properties);
+            convertedImage.Save(savePath,properties.imageFormat);
+        }
 
-            imageReadyToSave.Save(savePath, properties.imageFormat);
-        }
-        private Image ConvertToRatio(Image img,ImageConvertProperties properties)
+        public void AbortAsyncConverting()
         {
-            double convertRatio = 1 / (double)properties.ratio;
-            int width = (int)(img.Width * convertRatio);
-            int height = (int)(img.Height * convertRatio);
-            Image converted = new Bitmap(width, height);
-            DrawImgtoBitmap(ref converted, img,properties);
-            return converted;
+            _abortOperationTokenSource.Cancel();
+            _abortOperationTokenSource = new CancellationTokenSource();
         }
-        private Image ConvertToSize(Image img,ImageConvertProperties properties)
+
+        private Image LoadImage(string path)
         {
-            Image converted = new Bitmap(properties.width, properties.height);
-            DrawImgtoBitmap(ref converted, img,properties);
-            return converted;
+            byte[] data;
+            Image i;
+            using (FileStream fs = new FileStream(path, FileMode.Open))
+            {
+                data = new BinaryReader(fs).ReadBytes((int)fs.Length);
+                i = Image.FromStream(new MemoryStream(data));
+                fs.Dispose();
+            }
+            Image imgLoaded = new Bitmap(new Bitmap(i));
+            i.Dispose();
+            return imgLoaded;
         }
+       
         private void DrawImgtoBitmap(ref Image bitmap, Image sourceImage, ImageConvertProperties properties)
         {
             using (Graphics g = Graphics.FromImage(bitmap))
             {
                 g.InterpolationMode = properties.interpolationMode;
-                g.SmoothingMode =  properties.smoothinMode;
+                g.SmoothingMode =  properties.smoothingMode;
                 g.CompositingQuality = properties.compositionQuality;
-
-                //bitmap = new Bitmap(bitmap.Width,bitmap.Height,g);
                 g.DrawImage(sourceImage, 0, 0, bitmap.Width, bitmap.Height);
             }
+        }
+
+        private string[] FindOnlyPicturesFiles(string[] fTable)
+        {
+            return (from f in fTable
+                    where ImagesExtensions.Contains(Path.GetExtension(f).TrimStart('.'))
+                    select f).ToArray<string>();
         }
     }   
 }

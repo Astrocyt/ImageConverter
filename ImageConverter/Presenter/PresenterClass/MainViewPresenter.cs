@@ -17,57 +17,43 @@ namespace ImageConverter.Presenter.PresenterClass
     class MainViewPresenter : IMainViewPresenter
     {
         private IMainView _view;
-        private CancellationTokenSource _abortConverting;
-        private ImagesConverter _imagesConverter;
-
-        public long OrginalImagesSize
-        {
-            get {
-                if(_imagesConverter != null)
-                    return _imagesConverter.ImagesSize;
-                else return 0;
-                }
-        }
-
-        public long GetConvertedImagesSize
-        {
-            get { return 0; }
-        }
-        
+        private string[] _loadedImages;
+    
         public MainViewPresenter(IMainView mainView)
         {
             this._view = mainView;
+            ImagesConverter converter = ImagesConverter.GetInstance();
+            converter.ConvertingComplete += ConvertingComplete;
+            converter.ConvertingProgressChanged += ConvertingProgressChanged;
         }
 
         public void AbortConverting()
         {
-            _abortConverting.Cancel();
+            ImagesConverter.GetInstance().AbortAsyncConverting();
         }
 
         public void StartConverting()
         {
-            this._abortConverting = new CancellationTokenSource();
-            CancellationToken cancelTask = _abortConverting.Token;
-            Task.Factory.StartNew(()=>
-            {
-                    _imagesConverter.ConvertAll(_view.ConvertProperties,cancelTask);
-            });
+            ImagesConverter.GetInstance().ConvertAllAsync(_view.ConvertProperties,_loadedImages);
         }
 
         public void LoadImages(string path, bool deepSearch)
         {
-           this._imagesConverter = new ImagesConverter(path,deepSearch);
-           this._view.ActualizeLoadedImages(_imagesConverter.ImagesLoaded);
-           AssingEvents();
+            ImagesConverter converter = ImagesConverter.GetInstance();
+            string[] paths = converter.GetAllImagesPaths(path,deepSearch);
+            ImageInfo[] info = ImageInfo.CreateImageInfoFromPaths(paths);
+            this._loadedImages = paths;
+            this._view.ActualizeLoadedImages(info);
         }
 
-        private void AssingEvents()
+        private void ConvertingProgressChanged(double percentComplete)
         {
-            this._imagesConverter.ConvertingProgressChanged += 
-                new ImagesConverter.ProgressChangeDelegate(_view.ActualizeConvertingProgress);
-            this._imagesConverter.ConvertingComplete += 
-                new ImagesConverter.ConvertingCompletedDelegate(_view.ConvertingComplete);
+            _view.ActualizeConvertingProgress(percentComplete);
         }
-
+        
+        private void ConvertingComplete()
+        {
+            _view.ConvertingComplete();
+        }
     }
 }
