@@ -18,13 +18,17 @@ namespace ImageConverter.Presenter.PresenterClass
     {
         private IMainView _view;
         private string[] _loadedImages;
+        private ImageSearcher _imageSearcher;
+        private ImagesConverter _imagesConverter;
     
         public MainViewPresenter(IMainView mainView)
         {
             this._view = mainView;
-            ImagesConverter converter = ImagesConverter.GetInstance();
-            converter.ConvertingComplete += ConvertingComplete;
-            converter.ConvertingProgressChanged += ConvertingProgressChanged;
+            
+            _imageSearcher = new ImageSearcher();
+            _imagesConverter = ImagesConverter.GetInstance();
+            _imagesConverter.ConvertingComplete += ConvertingComplete;
+            _imagesConverter.ConvertingProgressChanged += ConvertingProgressChanged;
         }
 
         public void AbortConverting()
@@ -39,13 +43,12 @@ namespace ImageConverter.Presenter.PresenterClass
 
         public void LoadImages(string path, bool deepSearch)
         {
-            ImagesConverter converter = ImagesConverter.GetInstance();
-            string[] paths = converter.GetAllImagesPaths(path,deepSearch);
-            ImageInfo[] info = ImageInfo.CreateImageInfoFromPaths(paths);
+            string[] paths = _imageSearcher.GetImagesPaths(path,deepSearch);
+            ImageInfo[] info = _imageSearcher.GetImagesInfo(paths);
             this._loadedImages = paths;
             this._view.ActualizeLoadedImages(info);
         }
-
+        
         private void ConvertingProgressChanged(double percentComplete)
         {
             _view.ActualizeConvertingProgress(percentComplete);

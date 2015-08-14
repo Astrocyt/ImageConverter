@@ -18,6 +18,7 @@ namespace ImageConverter
         
         public MainView()
         {
+            
             InitializeComponent();
             this._convertProperties = new ImageConvertProperties();
             InitializeDefaultComponentsProperties();
@@ -53,7 +54,7 @@ namespace ImageConverter
             this.imageNewWidthTextBox.Text = imageNewHeightTextBox.Text = "0";
             this.compositionQualityComboBox.Items.AddRange(ImageConvertProperties.AvalilableCompositionQuality);
             this.interpolationComboBox.Items.AddRange(ImageConvertProperties.AvailableInterpolationModes);
-            this.smoothingModeComboBox.Items.AddRange(ImageConvertProperties.AvalilableSmoothingModes);
+            this.smoothingModeComboBox.Items.AddRange(ImageConvertProperties.AvailableSmoothingModes);
             this.convertFormatComboBox.Items.AddRange(ImageConvertProperties.AvailableImageFormats);
             this.compositionQualityComboBox.SelectedIndex =
                 this.interpolationComboBox.SelectedIndex = 
@@ -109,14 +110,14 @@ namespace ImageConverter
                 imagesInfoListView.Items.Add(listItem);
             }
 
-            this.fullSizeBeforeLabel.Text = string.Format("Actual size: {0}",images.Sum(i=>i.Size));
+            this.fullSizeBeforeLabel.Text = string.Format("Actual size: {0:N3}",images.Sum(i=>i.Size)/(1024*1024));
         }
 
         public void ActualizeConvertingProgress(double successPercent)
         {
             this.Invoke((MethodInvoker)(()=>{
                 this.convertingProgess.Value = (int)(successPercent * 100);
-            }));        
+            }));    
         }
 
         #endregion
@@ -172,15 +173,15 @@ namespace ImageConverter
 
         private void LoadImagesFromPath(object sender, EventArgs e)
         {
-            _presenter.LoadImages((sender as TextBox).Text, deepSearchCheckBox.Checked);
-            
-            if(imagesInfoListView.Items.Count > 0)
+            TextBox tb = sender as TextBox;
+            _presenter.LoadImages(tb.Text, deepSearchCheckBox.Checked);
+            if (imagesInfoListView.Items.Count > 0)
             {
                 this.sourceLabel.ForeColor = System.Drawing.Color.Green;
             }
-            else 
+            else
             {
-                this.sourceLabel.ForeColor = System.Drawing.Color.Black;
+                this.sourceLabel.ForeColor = System.Drawing.Color.Red;
             }
         }
     }

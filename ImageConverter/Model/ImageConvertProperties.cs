@@ -3,10 +3,19 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System;
 using System.Reflection;
+using ImageConverter.Model.Interface;
+
 namespace ImageConverter.Model
 {
     public class ImageConvertProperties
     {
+        public ISizingMode SizingMode 
+        {
+            get
+            {
+                return CreateSizingMode();
+            }    
+        }
 
         public string sourcePath;
         public string destonationPath;
@@ -17,7 +26,7 @@ namespace ImageConverter.Model
         public ImageFormat imageFormat;
         public int width;
         public int height;
-        public double ratio;
+        public int ratio;
 
         public static string[] AvailableInterpolationModes 
         {
@@ -35,7 +44,7 @@ namespace ImageConverter.Model
                     .Except(new string[]{"Invalid","Default"})).ToArray<string>();
             }
         }
-        public static string[] AvalilableSmoothingModes
+        public static string[] AvailableSmoothingModes
         {
             get
             {
@@ -48,7 +57,7 @@ namespace ImageConverter.Model
             get
             {
                 return (from p in typeof(ImageFormat).GetProperties() select p.Name)
-                    .Except(new string[]{"MemoryBmp","Guid"}).ToArray<string>();
+                    .Except(new string[] { "MemoryBmp", "Guid" }).Concat(new string[] { "Jpg" }).ToArray<string>();
             }
         }
 
@@ -77,9 +86,24 @@ namespace ImageConverter.Model
         {
             set
             {
+                value = value == "Jpg" ? "Jpeg" : value;
                 imageFormat = (ImageFormat)typeof(ImageFormat)
-                    .InvokeMember(value,BindingFlags.GetProperty,null,typeof(ImageFormat),null);
+                    .InvokeMember(value.ToString(),BindingFlags.GetProperty,null,typeof(ImageFormat),null);
             }
+        }
+
+        ISizingMode CreateSizingMode()
+        {
+            ISizingMode sMode;
+            if(ratioMode)
+            {
+                sMode = new RatioMode(ratio);
+            }
+            else
+            {
+                sMode = new FixedSizeMode(width,height);
+            }
+            return sMode;
         }
     }
 }
