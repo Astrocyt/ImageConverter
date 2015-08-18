@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImageConverter.Presenter.PresenterInterface
 {
-    interface IPreviewPresenter
+    public interface IPreviewPresenter
     {
     }
 }

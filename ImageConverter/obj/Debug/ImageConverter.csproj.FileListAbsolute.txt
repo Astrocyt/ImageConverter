@@ -7,3 +7,4 @@ G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\bin\De
 G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.exe
 G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.pdb
 G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.MainView.resources
+G:\PLIKI\Visual Studio Projects\ConsoleApps\ImageConverter\ImageConverter\obj\Debug\ImageConverter.View.ViewClass.NameConflictsView.resources

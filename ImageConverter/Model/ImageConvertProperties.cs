@@ -17,8 +17,6 @@ namespace ImageConverter.Model
             }    
         }
 
-        public string sourcePath;
-        public string destonationPath;
         public bool ratioMode;
         public InterpolationMode interpolationMode;
         public CompositingQuality compositionQuality;

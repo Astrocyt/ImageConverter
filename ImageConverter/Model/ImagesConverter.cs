@@ -48,20 +48,14 @@ namespace ImageConverter.Model
             return _imageConverterInstance;
         }
 
-        public void ConvertAllAsync(ImageConvertProperties convertProperties,string[] imagesPaths)
+        public void ConvertAllAsync(ImageConvertProperties convertProperties,string[] imagesPaths,string[] savePaths)
         {
             CancellationToken cancelTask = _abortOperationTokenSource.Token;
             
             Task.Factory.StartNew(()=>{
                 for (int i = 0; i < imagesPaths.Length && !cancelTask.IsCancellationRequested; i++)
                 {   
-                    Image loadedImage = LoadImage(imagesPaths[i]);
-                    Image convertedImage = ConvertImage(loadedImage, convertProperties);
-                    string savePath = CreateSavePath(imagesPaths[i],
-                        convertProperties.destonationPath,
-                        convertProperties.imageFormat);
-                    
-                    SaveImage(convertedImage, savePath);
+                    ProcessImage(imagesPaths[i],savePaths[i],convertProperties);
 
                     if(ConvertingProgressChanged != null)
                         ConvertingProgressChanged(i/(double)imagesPaths.Length);
@@ -75,6 +69,16 @@ namespace ImageConverter.Model
         {
             _abortOperationTokenSource.Cancel();
             _abortOperationTokenSource = new CancellationTokenSource();
+        }
+
+        private void ProcessImage(string source,string destonation, ImageConvertProperties convertProperties)
+        {
+            Image loadedImage = LoadImage(source);
+            Image convertedImage = ConvertImage(loadedImage, convertProperties);
+            string savePath = CreateSavePath(destonation,
+                convertProperties.imageFormat);
+
+            SaveImage(convertedImage, savePath);
         }
 
         private Image LoadImage(string path)
@@ -121,14 +125,9 @@ namespace ImageConverter.Model
             return converted;
         }
 
-        private string CreateSavePath(string imgSourcePath,string imgSaveDirectory, ImageFormat format)
+        private string CreateSavePath(string savePath, ImageFormat format)
         {
-            string savePath = string.Format("{0}\\{1}.{2}",
-              imgSaveDirectory,
-              Path.GetFileNameWithoutExtension(imgSourcePath),
-              format.ToString());
-
-            return savePath;
+            return string.Format("{0}.{1}",savePath,format.ToString());
         }
     }   
 }

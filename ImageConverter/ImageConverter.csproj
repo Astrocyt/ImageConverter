@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6623EAD2-0D35-4C4D-A0EA-B0816ED7495A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ImageConverter</RootNamespace>
     <AssemblyName>ImageConverter</AssemblyName>
@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\FileNameConflictSolver.cs" />
+    <Compile Include="Model\FileNameValidation.cs" />
     <Compile Include="Model\FixedSizeMode.cs" />
     <Compile Include="Model\ImageConvertProperties.cs" />
     <Compile Include="Model\ImageInfo.cs" />
@@ -55,8 +57,16 @@
     <Compile Include="Model\Interface\ISizingMode.cs" />
     <Compile Include="Model\RatioMode.cs" />
     <Compile Include="Presenter\PresenterClass\MainViewPresenter.cs" />
+    <Compile Include="Presenter\PresenterClass\NameConflictViewPresenter.cs" />
     <Compile Include="Presenter\PresenterInterface\IMainViewPresenter.cs" />
+    <Compile Include="Presenter\PresenterInterface\INameConflictsViewPresenter.cs" />
     <Compile Include="Presenter\PresenterInterface\IPreviewPresenter.cs" />
+    <Compile Include="View\ViewClass\NameConflictView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\ViewClass\NameConflictView.Designer.cs">
+      <DependentUpon>NameConflictView.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\ViewClass\MainView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,7 +82,11 @@
       <DependentUpon>PreviewView.cs</DependentUpon>
     </Compile>
     <Compile Include="View\ViewInterface\IMainView.cs" />
+    <Compile Include="View\ViewInterface\INameConflictsView.cs" />
     <Compile Include="View\ViewInterface\IPreview.cs" />
+    <EmbeddedResource Include="View\ViewClass\NameConflictView.resx">
+      <DependentUpon>NameConflictView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\ViewClass\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
     </EmbeddedResource>

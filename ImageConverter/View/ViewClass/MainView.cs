@@ -131,6 +131,7 @@ namespace ImageConverter
 
         private void StartConverting(object sender, EventArgs e)
         {
+            _presenter.SaveDirectory = this.destonationTextBox.Text;
             _presenter.StartConverting();
             (sender as Button).Enabled = false;
             abortConvertingButton.Enabled = true;
@@ -147,8 +148,6 @@ namespace ImageConverter
         {
             this._convertProperties.height = int.Parse(imageNewHeightTextBox.Text);
             this._convertProperties.width = int.Parse(imageNewWidthTextBox.Text);
-            this._convertProperties.sourcePath = sourceTextBox.Text;
-            this._convertProperties.destonationPath = destonationTextBox.Text;
             this._convertProperties.ratioMode = ratioRadioButton.Checked;
             this._convertProperties.ratio = ratioConvertTrackBar.Value;
             this._convertProperties.ImageFormat = convertFormatComboBox.SelectedItem.ToString();
